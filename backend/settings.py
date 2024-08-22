@@ -27,7 +27,7 @@ SECRET_KEY = "django-insecure-^%zyw^ysnjf+hrh0mgzhj=nzf0iu&l2q_0l@b7fx8m&!+yb#t(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [".vercel.app", ".now.sh"]
 
 
 # Application definition
@@ -204,7 +204,3 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
-
-# Stripe settings
-STRIPE_TEST_PUBLIC_KEY = "pk_test_51PqCNgJqqPo9uAamEn4uIGKLplZm8YxmydP2GiEi12apa3eo3nnNXnVIWB85m33OefgF7lVgMYXLsYeNzEfiDIW700CqIfNXPx"
-STRIPE_SECRET_KEY = "sk_test_51PqCNgJqqPo9uAamKr8Xbpb4QRPoe8dIVenIqgjZKH5ntt9QmLo3UoOuf2umqDYSJS2Qn0ane2jQoYlrkg6fie9S00by73R2Q6"
