@@ -148,11 +148,11 @@ USE_TZ = True
 
 # Static and media files configurations
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Optional: If you have a custom static files directory
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, "static"),
 ]
 
 MEDIA_URL = "/media/"
@@ -165,7 +165,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
+    "https://virtualquranschool.netlify.app/",
 ]
 
 SIMPLE_JWT = {
