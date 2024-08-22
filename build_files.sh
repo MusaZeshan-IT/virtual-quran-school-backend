@@ -4,10 +4,10 @@
 echo "BUILD START"
 
 # Install dependencies
-python -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 
 # Run Django migrations and any other necessary commands
-python manage.py migrate
+python3 manage.py migrate
 
 # Print end message
 echo "BUILD END"
