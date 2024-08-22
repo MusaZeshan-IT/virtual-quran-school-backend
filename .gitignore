@@ -1,8 +1,5 @@
 # Ignore virtual environment directory
 .venv
 
-# Ignore the payments directory and its contents
-payments
-
 # Ignore SQLite database file
 db.sqlite3
