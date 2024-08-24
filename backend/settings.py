@@ -2,33 +2,28 @@ import os
 from datetime import timedelta
 from pathlib import Path
 import dj_database_url
-import environ
+from dotenv import load_dotenv
 
-# Initialize environment variables
-env = environ.Env(
-    DEBUG=(bool, False),
-    DJANGO_ALLOWED_HOSTS=(list, []),
-    CORS_ALLOWED_ORIGINS=(list, []),
-    DATABASE_URL=(str, "postgres://localhost:5432/mydb"),
-    DJANGO_SECRET_KEY=(str, ""),
-)
+load_dotenv()  # load environment variables from .env file
+
+ENVIRONMENT = os.getenv("ENVIRONMENT", default="production")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Read .env file
-environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env("DJANGO_SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env("DJANGO_DEBUG")
+if ENVIRONMENT == "development":
+    DEBUG = True
+else:
+    DEBUG = False
 
-ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS")
+ALLOWED_HOSTS = [".vercel.app", ".now.sh", "localhost", "127.0.0.1", "*"]
 
 # Application definition
 
@@ -68,6 +63,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = "backend.urls"
@@ -91,7 +87,16 @@ TEMPLATES = [
 WSGI_APPLICATION = "backend.wsgi.application"
 
 # Database configuration
-DATABASES = {"default": dj_database_url.config(default=env("DATABASE_URL"))}
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "virtualquranschool_db",
+        "USER": "MusaZeshan",
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": "vqs-db.che6iycked2n.eu-north-1.rds.amazonaws.com",
+        "PORT": "5432",
+    }
+}
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -121,7 +126,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # CORS Configuration
-CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS")
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "https://virtualquranschool.netlify.app",
+]
 
 # Static files settings
 STATIC_URL = "/static/"
