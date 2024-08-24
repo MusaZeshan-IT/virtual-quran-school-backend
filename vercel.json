@@ -18,13 +18,6 @@
     {
       "src": "/api/(.*)",
       "dest": "/backend/wsgi.py"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/backend/wsgi.py"
     }
-  ],
-  "env": {
-    "DATABASE_URL": "postgresql://postgres:ObJdVMRpNDIhkIfnqtLFCdbXoCZenVdN@autorack.proxy.rlwy.net:32693/railway"
-  }
+  ]
 }
