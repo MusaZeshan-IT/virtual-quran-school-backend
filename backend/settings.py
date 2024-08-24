@@ -1,7 +1,6 @@
 import os
 from datetime import timedelta
 from pathlib import Path
-import dj_database_url
 from dotenv import load_dotenv
 
 load_dotenv()  # load environment variables from .env file
@@ -15,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-&+^#v*4(9cznr-%6kxi0dqa7y$prodldhv+szha+r3w4+^ni-r"
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if ENVIRONMENT == "development":
