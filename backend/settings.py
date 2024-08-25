@@ -1,9 +1,12 @@
+"""Django settings for backend."""
+
 import os
 from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()  # load environment variables from .env file
+# Load environment variables from .env file
+load_dotenv()
 
 ENVIRONMENT = os.getenv("ENVIRONMENT", default="production")
 
@@ -14,7 +17,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "^i7vhkr7uz$5d%i@og)0+alj3t%6y0(emjt@ffqx&of(=p^hi6"
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if ENVIRONMENT == "development":
@@ -92,7 +95,7 @@ DATABASES = {
         "NAME": "virtualquranschool_db",
         "USER": "MusaZeshan",
         "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": "vqs-db.che6iycked2n.eu-north-1.rds.amazonaws.com",
+        "HOST": "vqs-db.cfy2cec0miwu.eu-north-1.rds.amazonaws.com",
         "PORT": "5432",
     }
 }
@@ -167,3 +170,15 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
+
+
+# AWS Configuration
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_SIGNATURE_NAME = "s3v4"
+AWS_S3_REGION_NAME = "eu-north-1"
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+AWS_S3_VERITY = True
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
