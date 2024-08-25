@@ -14,7 +14,6 @@ gunicorn==23.0.0
 idna==3.7
 jmespath==1.0.1
 packaging==24.1
-psycopg2==2.9.9
 psycopg2-binary==2.9.9
 PyJWT==2.9.0
 python-dateutil==2.9.0.post0
