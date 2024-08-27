@@ -25,7 +25,7 @@ if ENVIRONMENT == "development":
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = [".vercel.app", ".now.sh", "localhost", "127.0.0.1", "https://web-production-61cc.up.railway.app/"]
+ALLOWED_HOSTS = [".vercel.app", ".now.sh", "localhost", "127.0.0.1", "web-production-61cc.up.railway.app"]
 CSRF_TRUSTED_ORIGINS = ['https://web-production-61cc.up.railway.app']
 
 # Application definition
@@ -64,10 +64,10 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
-    # "django.middleware.csrf.CsrfViewMiddleware",
-    # "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 ROOT_URLCONF = "backend.urls"
