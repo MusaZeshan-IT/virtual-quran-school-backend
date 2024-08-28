@@ -24,6 +24,7 @@ class Course(models.Model):
     duration = models.CharField(max_length=100)
     class_time = models.TimeField(default="07:00:00")
     slug = models.SlugField(default="")
+    type = models.CharField(max_length=100)
 
     class_days = models.JSONField(
         default=list, help_text="List of days of the week the course is offered"
