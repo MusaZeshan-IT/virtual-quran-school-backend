@@ -93,14 +93,21 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # Database configuration
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "virtualquranschool_db",
-        "USER": "MusaZeshan",
-        "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": os.environ.get("DB_HOST"),
-        "PORT": "5432",
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
     }
 }
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": "virtualquranschool_db",
+#         "USER": "MusaZeshan",
+#         "PASSWORD": os.environ.get("DB_PASSWORD"),
+#         "HOST": os.environ.get("DB_HOST"),
+#         "PORT": "5432",
+#     }
+# }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
