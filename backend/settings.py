@@ -17,13 +17,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY", "")
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if ENVIRONMENT == "development":
-    DEBUG = True
-else:
     DEBUG = False
+else:
+    DEBUG = True
 
 ALLOWED_HOSTS = [".vercel.app", ".now.sh", "localhost", "127.0.0.1", "web-production-61cc.up.railway.app"]
 CSRF_TRUSTED_ORIGINS = ['https://web-production-61cc.up.railway.app']
@@ -97,7 +97,7 @@ DATABASES = {
         "NAME": "virtualquranschool_db",
         "USER": "MusaZeshan",
         "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": "vqs-db.cfy2cec0miwu.eu-north-1.rds.amazonaws.com",
+        "HOST": os.environ.get("DB_HOST"),
         "PORT": "5432",
     }
 }
