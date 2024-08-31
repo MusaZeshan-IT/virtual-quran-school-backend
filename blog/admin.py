@@ -16,7 +16,6 @@ class PostAdmin(admin.ModelAdmin):
         "created_at",
         "slug",
     )
-    filter_horizontal = ("categories",)
 
 
 class CommentAdmin(admin.ModelAdmin):
