@@ -7,6 +7,8 @@ from .models import Course
 class CourseSerializer(serializers.ModelSerializer):
     """The serializer for the courses"""
 
+    category = serializers.SerializerMethodField()
+
     class Meta:
         """The meta data for the serializer"""
 
