@@ -10,7 +10,7 @@ class PostAdmin(admin.ModelAdmin):
     """The admin for the posts"""
 
     list_display = (
-        "id"
+        "id",
         "title",
         "tags",
         "created_at",
