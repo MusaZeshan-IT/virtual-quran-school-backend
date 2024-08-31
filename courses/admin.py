@@ -13,14 +13,13 @@ class CourseAdmin(admin.ModelAdmin):
         "name",
         "fee",
         "level",
+        "type",
         "enrolled",
         "duration",
         "provided_by",
         "tutor",
-        "type",
-        "level",
     )
-    filter_horizontal = ('categories',)
+    filter_horizontal = ("categories",)
 
 
 class CategoryAdmin(admin.ModelAdmin):
