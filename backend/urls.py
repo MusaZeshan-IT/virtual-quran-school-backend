@@ -24,6 +24,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/courses/", include("courses.urls")),
+    path("api/posts/", include("blog.urls")),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("api/checkout", include("payments.urls")),
     path("api/accounts/", include("accounts.urls")),
