@@ -7,7 +7,7 @@ from .models import Course
 class CourseSerializer(serializers.ModelSerializer):
     """The serializer for the courses"""
 
-    category = serializers.SerializerMethodField()
+    categories = serializers.SerializerMethodField()
 
     class Meta:
         """The meta data for the serializer"""
@@ -15,6 +15,6 @@ class CourseSerializer(serializers.ModelSerializer):
         model = Course
         fields = "__all__"
 
-    def get_category(self, obj):
+    def get_categories(self, obj):
         """Get the category name of the course"""
         return [category.name for category in obj.categories.all()]
