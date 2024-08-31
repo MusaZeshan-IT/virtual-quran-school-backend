@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "accounts",
     "courses",
     "payments",
+    "blog",
     # Packages/Libraries
     "whitenoise.runserver_nostatic",
     "rest_framework",
