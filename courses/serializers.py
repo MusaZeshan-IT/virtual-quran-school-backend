@@ -12,3 +12,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
         model = Course
         fields = "__all__"
+
+    def get_category(self, obj):
+        """Get the category name of the course"""
+        return obj.category.name
