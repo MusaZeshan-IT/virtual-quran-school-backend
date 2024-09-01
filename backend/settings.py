@@ -38,24 +38,32 @@ CSRF_TRUSTED_ORIGINS = ["https://web-production-61cc.up.railway.app"]
 # Application definition
 
 INSTALLED_APPS = [
+    # Django Default Apps
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # Django Apps
-    "accounts",
-    "courses",
-    "payments",
-    "blog",
+]
+
+EXTERNAL_APPS = [
     # Packages/Libraries
+    "cloudinary_storage",
+    "cloudinary",
     "whitenoise.runserver_nostatic",
     "rest_framework",
     "corsheaders",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
+    # My Apps
+    "accounts",
+    "courses",
+    "payments",
+    "blog",
 ]
+
+INSTALLED_APPS += EXTERNAL_APPS
 
 SITE_URL = "http://localhost:5173"
 
@@ -121,11 +129,27 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+# Media files (User uploads, images, etc.)
+MEDIA_URL = "/media/"  # URL to access media files
+
+# Default File Storage as Cloudinary
+if ENVIRONMENT == "production":
+    DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+else:
+    MEDIA_ROOT = os.path.join(
+        BASE_DIR, "media"
+    )  # Location on disk to store media files
+
+
+# Cloudinary Storage Settings
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": os.getenv("CLOUD_NAME"),
+    "API_KEY": os.getenv("CLOUD_API_KEY"),
+    "API_SECRET": os.getenv("CLOUD_API_SECRET"),
+}
+
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
