@@ -133,22 +133,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Media files (User uploads, images, etc.)
 MEDIA_URL = "/media/"  # URL to access media files
-
-# Default File Storage as Cloudinary
-if ENVIRONMENT == "production":
-    DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-else:
-    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-
-
-# Cloudinary Storage Settings
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": os.getenv("CLOUD_NAME"),
-    "API_KEY": os.getenv("CLOUD_API_KEY"),
-    "API_SECRET": os.getenv("CLOUD_API_SECRET"),
-}
-
-print("CLOUDINARY_STORAGE: ", CLOUDINARY_STORAGE)
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

@@ -2,7 +2,6 @@
 
 from django.db import models
 from django.contrib.auth.models import User
-from cloudinary.models import CloudinaryField
 
 # Create your models here.
 
@@ -11,7 +10,7 @@ class Post(models.Model):
     """The model for the posts"""
 
     title = models.CharField(max_length=100)
-    image = CloudinaryField('image')
+    image = models.ImageField(upload_to="images/blogposts/")
     created_at = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(default="")
     tags = models.JSONField(
