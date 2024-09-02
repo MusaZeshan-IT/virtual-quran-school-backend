@@ -29,21 +29,6 @@ class Post(models.Model):
     # Default Manager
     objects = models.Manager()
 
-    def save(self, *args, **kwargs):
-        # Log before saving the image
-        if self.image:
-            print(f"Uploading image {self.image.name} to Cloudinary...")
-            # Check if the file storage is using Cloudinary
-            if isinstance(default_storage, MediaCloudinaryStorage):
-                print("Cloudinary storage is being used.")
-            else:
-                print("Cloudinary storage is NOT being used.")
-
-        super().save(*args, **kwargs)
-
-        # Log after saving the image
-        print(f"Image {self.image.name} uploaded successfully.")
-
     def __str__(self):
         return f"{self.title}"
 
