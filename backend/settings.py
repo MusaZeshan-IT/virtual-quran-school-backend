@@ -138,9 +138,7 @@ MEDIA_URL = "/media/"  # URL to access media files
 if ENVIRONMENT == "production":
     DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 else:
-    MEDIA_ROOT = os.path.join(
-        BASE_DIR, "media"
-    )  # Location on disk to store media files
+    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 
 # Cloudinary Storage Settings
@@ -150,6 +148,7 @@ CLOUDINARY_STORAGE = {
     "API_SECRET": os.getenv("CLOUD_API_SECRET"),
 }
 
+print("CLOUDINARY_STORAGE: ", CLOUDINARY_STORAGE)
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
