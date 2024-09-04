@@ -6,22 +6,43 @@ Views for the contact app
 
 from rest_framework import generics, status
 from rest_framework.response import Response
+from django.core.mail import send_mail
+from .models import ContactMessage
 from .serializers import ContactMessageSerializer
 
 
-class ContactMessageCreateView(generics.CreateAPIView):
-    """
-    API view to handle contact form submissions.
-    """
+class ContactFormView(generics.CreateAPIView):
+    """The view for the contact form"""
 
+    queryset = ContactMessage.objects.all()
     serializer_class = ContactMessageSerializer
 
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                {"message": "Your message has been sent successfully!"},
-                status=status.HTTP_201_CREATED,
-            )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def perform_create(self, serializer):
+        # Save the form data to the database
+        serializer.save()
+
+        # Extract the data
+        name = serializer.validated_data.get("name")
+        email_from = serializer.validated_data.get("email_from")
+        subject = serializer.validated_data.get("subject")
+        message = serializer.validated_data.get("message")
+
+        # Formatting the message content
+        formatted_message = f"Name: {name}\nEmail: {email_from}\n\nMessage:\n{message}"
+
+        # Setting the email sender
+        email_from_display = "Virtual Quran School <virtualquran.info@gmail.com>"
+
+        # Compose and send the email
+        send_mail(
+            subject=subject,
+            message=formatted_message,
+            from_email=email_from_display,
+            recipient_list=["virtualquran.info@gmail.com"],
+            fail_silently=False,
+        )
+
+        # Return a custom response
+        return Response(
+            {"detail": "Message sent successfully"}, status=status.HTTP_201_CREATED
+        )

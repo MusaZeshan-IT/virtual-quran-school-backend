@@ -19,4 +19,4 @@ class ContactMessage(models.Model):
     objects = models.Manager()  # Default manager
 
     def __str__(self):
-        return f"Message from {self.name} - {self.subject}"
+        return f"Message from {self.name} - {self.email_from}"
