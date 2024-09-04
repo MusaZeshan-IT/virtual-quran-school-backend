@@ -10,7 +10,8 @@ class Post(models.Model):
     """The model for the posts"""
 
     title = models.CharField(max_length=100)
-    short_title = models.CharField(max_length=100, default="short_title")
+    short_title = models.CharField(max_length=100)
+    rating = models.FloatField()
     image = models.ImageField(upload_to="images/blogposts/")
     created_at = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(default="")
