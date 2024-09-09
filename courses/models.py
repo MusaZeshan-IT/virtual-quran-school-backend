@@ -22,7 +22,8 @@ class Course(models.Model):
     provided_by = models.CharField(max_length=100)
     level = models.CharField(max_length=100)
     enrolled = models.IntegerField(default=0, null=True, blank=True)
-    duration = models.CharField(max_length=100)
+    total_duration = models.CharField(max_length=100)
+    class_duration = models.CharField(max_length=100)
     slug = models.SlugField(default="")
     type = models.CharField(max_length=100)
 
