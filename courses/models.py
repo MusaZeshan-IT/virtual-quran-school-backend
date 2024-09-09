@@ -16,13 +16,13 @@ class Course(models.Model):
     """The model for the courses"""
 
     name = models.CharField(max_length=100)
+    hidden = models.BooleanField(default=False)
     fee = models.IntegerField()
     tutor = models.CharField(max_length=100)
     provided_by = models.CharField(max_length=100)
     level = models.CharField(max_length=100)
     enrolled = models.IntegerField(default=0, null=True, blank=True)
     duration = models.CharField(max_length=100)
-    class_time = models.TimeField(default="07:00:00")
     slug = models.SlugField(default="")
     type = models.CharField(max_length=100)
 

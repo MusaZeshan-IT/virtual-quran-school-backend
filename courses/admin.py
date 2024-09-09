@@ -18,6 +18,7 @@ class CourseAdmin(admin.ModelAdmin):
         "duration",
         "provided_by",
         "tutor",
+        "hidden",
     )
     filter_horizontal = ("categories",)
 
