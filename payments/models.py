@@ -18,6 +18,6 @@ class Order(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     transaction_id = models.CharField(max_length=255, blank=True, null=True)
 
-    objects = models.Manager() # Default manager
+    objects = models.Manager()  # Default manager
 
     # Other relevant fields (product, timestamp, etc.)
