@@ -1,9 +1,13 @@
 """The views for the payment app."""
 
-from django.http import HttpResponse
+import requests
 from rest_framework import viewsets
+from django.http import HttpResponse, JsonResponse
+from django.conf import settings
 from .models import Order
 from .serializers import OrderSerializer
+
+JAZZCASH_API_URL = "https://www.jazzcash.com.pk/"
 
 
 class OrderStatusView(viewsets.ModelViewSet):
@@ -11,6 +15,31 @@ class OrderStatusView(viewsets.ModelViewSet):
 
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+
+
+def initiate_payment(request):
+    """Initiate jazzcash payment"""
+
+    # Replace these with your actual JazzCash credentials
+    merchant_id = settings.JAZZCASH_MERCHANT_ID
+    password = settings.JAZZCASH_PASSWORD
+
+    # Payment initiation details
+    payload = {
+        "merchant_id": merchant_id,
+        "password": password,
+        "amount": 1000,  # Amount to be paid
+        "order_id": "123456",  # Unique order ID
+        "callback_url": "https://yourwebsite.com/payment/callback/",
+    }
+
+    response = requests.post(f"{JAZZCASH_API_URL}/initiate-payment", data=payload)
+    return JsonResponse(response.json())
+
+
+def payment_callback(request):
+    # Handle payment callback
+    return JsonResponse({"status": "success"})
 
 
 def payment_ipn(request):
