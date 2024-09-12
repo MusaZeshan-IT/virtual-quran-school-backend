@@ -1,28 +1,33 @@
 """The views for the payment app."""
 
-import json
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
+from .models import Order  # Assuming you have an Order model
 
 
-@csrf_exempt
-def checkout(request):
-    """Handle the checkout request."""
+def payment_ipn(request):
+    """The view for handling IPN (Instant Payment Notification) requests"""
     if request.method == "POST":
-        data = json.loads(request.body)
-        first_name = data.get("firstName")
-        last_name = data.get("lastName")
-        email = data.get("email")
-        course = data.get("course")
-        amount = data.get("amount")
+        # Extract payment details from the request.POST (or request.body if JSON)
+        payment_status = request.POST.get("payment_status")
+        order_id = request.POST.get("custom")  # Assuming this is your order identifier
 
-        # Generate Payoneer payment URL with user details and course info
-        payoneer_url = (
-            f"https://payoneer.com/paymentrequest?account_id=YOUR_PAYONEER_ACCOUNT_ID&amount={amount}"
-            f"&currency=USD&description=Payment for {course}&return_url=http://localhost:5173/payment-success"
-        )
+        try:
+            # Fetch the related order
+            order = Order.objects.get(id=order_id)
 
-        # Return the Payoneer URL for redirection
-        return JsonResponse({"paymentUrl": payoneer_url})
+            # Update order status based on payment status
+            if payment_status == "Completed":
+                order.status = "paid"
+            else:
+                order.status = "pending"
 
-    return JsonResponse({"error": "Invalid request method."}, status=400)
+            order.save()
+
+            # Log and confirm successful IPN handling
+            return HttpResponse("IPN processed", status=200)
+
+        except Order.DoesNotExist:
+            # Log or handle invalid order ID
+            return HttpResponse("Order not found", status=404)
+    else:
+        return HttpResponse("Invalid request method", status=405)
