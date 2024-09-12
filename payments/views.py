@@ -1,33 +1,48 @@
 """The views for the payment app."""
 
 from django.http import HttpResponse
-from .models import Order  # Assuming you have an Order model
+from rest_framework import viewsets
+from .models import Order
+from .serializers import OrderSerializer
+
+
+class OrderStatusView(viewsets.ModelViewSet):
+    """The view for handling order status requests"""
+
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
 
 
 def payment_ipn(request):
-    """The view for handling IPN (Instant Payment Notification) requests"""
+    """Handle IPN requests from the payment gateway"""
     if request.method == "POST":
-        # Extract payment details from the request.POST (or request.body if JSON)
+        # Extract payment details from the POST data
         payment_status = request.POST.get("payment_status")
-        order_id = request.POST.get("custom")  # Assuming this is your order identifier
+        order_id = request.POST.get("custom")  # Order ID
+
+        if not order_id or not payment_status:
+            return HttpResponse("Invalid IPN data", status=400)
 
         try:
-            # Fetch the related order
+            # Retrieve the order from the database
             order = Order.objects.get(id=order_id)
 
-            # Update order status based on payment status
+            # Update the order status based on the payment status
             if payment_status == "Completed":
                 order.status = "paid"
-            else:
+            elif payment_status == "Failed":
+                order.status = "failed"
+            elif payment_status == "Pending":
                 order.status = "pending"
+            else:
+                order.status = "unknown"  # Handle any unexpected statuses
 
             order.save()
 
-            # Log and confirm successful IPN handling
+            # Confirm that the IPN was processed successfully
             return HttpResponse("IPN processed", status=200)
 
         except Order.DoesNotExist:
-            # Log or handle invalid order ID
             return HttpResponse("Order not found", status=404)
     else:
         return HttpResponse("Invalid request method", status=405)
