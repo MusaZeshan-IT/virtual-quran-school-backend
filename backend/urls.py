@@ -30,7 +30,7 @@ urlpatterns = [
     path("api/accounts/", include("accounts.urls")),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    path("payments/", include("payments.urls")),
+    path("api/payments/", include("payments.urls")),
 ]
 
 if settings.DEBUG:
