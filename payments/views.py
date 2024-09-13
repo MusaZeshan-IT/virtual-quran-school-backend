@@ -5,9 +5,10 @@ import hashlib
 import hmac
 import requests
 from rest_framework import viewsets
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from django.http import HttpResponse, JsonResponse
 from django.conf import settings
-from django.views.decorators.csrf import csrf_exempt
 from .models import Order
 from .serializers import OrderSerializer
 
@@ -23,7 +24,8 @@ class OrderStatusView(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
 
 
-@csrf_exempt
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])  # Ensures the user is authenticated
 def initiate_payment(request):
     """Initiate payment and redirect the user to the JazzCash page."""
 
@@ -32,19 +34,13 @@ def initiate_payment(request):
         data = json.loads(request.body)
 
         # Get the authenticated user from the request
-        user = request.user if request.user.is_authenticated else None
+        user = request.user  # User will be authenticated due to adding the jwt token
 
         course_name = data.get("course_name")
         amount = data.get("amount")
 
-        if not amount:
-            return JsonResponse({"error": "Missing course amount"}, status=400)
-
-        if not course_name:
-            return JsonResponse({"error": "Missing course name"}, status=400)
-
-        if not user:
-            return JsonResponse({"error": "User not authenticated"}, status=400)
+        if not amount or not course_name or not user:
+            return JsonResponse({"error": "Missing required fields"}, status=400)
 
         # Step 1: Create an order in the database
         order = Order.objects.create(
