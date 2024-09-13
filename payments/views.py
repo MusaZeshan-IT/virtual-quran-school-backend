@@ -1,6 +1,8 @@
 """The views for the payment app."""
 
 import json
+import hashlib
+import hmac
 import requests
 from rest_framework import viewsets
 from django.http import HttpResponse, JsonResponse
@@ -9,7 +11,9 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import Order
 from .serializers import OrderSerializer
 
-JAZZCASH_API_URL = "https://www.jazzcash.com.pk/"
+JAZZCASH_API_URL = (
+    "https://sandbox.jazzcash.com.pk/ApplicationAPI/API/Payment/DoTransaction"
+)
 
 
 class OrderStatusView(viewsets.ModelViewSet):
@@ -21,42 +25,58 @@ class OrderStatusView(viewsets.ModelViewSet):
 
 @csrf_exempt
 def initiate_payment(request):
-    """Handle payment initiation"""
-
+    """Initiate payment and redirect the user to the JazzCash page."""
     if request.method == "POST":
         data = json.loads(request.body)
-        user_id = data.get("user_id")  # Assuming user_id is passed from the frontend
+        user_id = data.get("user_id")  # Extract user_id
         course = data.get("course")
         amount = course["fee"]
 
         # Step 1: Create an order in the database
         order = Order.objects.create(user_id=user_id, status="pending", amount=amount)
 
-        # Use the order ID for the transaction
-        order_id = str(order.id)
-
-        # Step 2: Define JazzCash payment initiation parameters
+        # JazzCash transaction parameters
         payload = {
-            "amount": amount,
-            "merchant_id": settings.JAZZCASH_MERCHANT_ID,
-            "password": settings.JAZZCASH_PASSWORD,
-            "return_url": "https://virtualquranschool.netlify.app/payment-success/",  # Update with your success page URL
-            "order_id": order_id,  # Use the created order's ID
+            "pp_Version": "1.1",
+            "pp_TxnType": "MWALLET",
+            "pp_Language": "EN",
+            "pp_MerchantID": settings.JAZZCASH_MERCHANT_ID,
+            "pp_Password": settings.JAZZCASH_PASSWORD,
+            "pp_TxnRefNo": str(order.id),  # Using the order ID
+            "pp_Amount": str(int(amount * 100)),  # Amount in paisa (1 PKR = 100 paisa)
+            "pp_ReturnURL": "https://virtualquranschool.netlify.app/payment-success/",
+            "pp_Description": f"Payment for course: {course['name']}",
+            "pp_SecureHash": generate_secure_hash(order.id, amount),
         }
 
-        # Step 3: Make request to JazzCash payment initiation endpoint
-        response = requests.post(
-            "https://jazzcash.com.pk/transaction/initiate", data=payload
-        )
+        # Step 3: Send request to JazzCash
+        response = requests.post(JAZZCASH_API_URL, data=payload, timeout=10)
 
         if response.status_code == 200:
-            # Get the redirect URL from JazzCash response
-            redirect_url = response.json().get("redirect_url")
+            # Get the JazzCash URL from the response
+            redirect_url = response.json().get(
+                "pp_TxnRefNo"
+            )  # JazzCash may send the URL
             return JsonResponse({"redirectUrl": redirect_url})
         else:
             return JsonResponse({"error": "Payment initiation failed"}, status=500)
 
     return JsonResponse({"error": "Invalid request method"}, status=400)
+
+
+# Helper function to generate secure hash
+def generate_secure_hash(order_id, amount):
+    """Generate secure hash for payment request"""
+
+    message = f"{order_id}{amount}"
+    secure_hash = (
+        hmac.new(
+            settings.JAZZCASH_INTEGRITY_SALT.encode(), message.encode(), hashlib.sha256
+        )
+        .hexdigest()
+        .upper()
+    )
+    return secure_hash
 
 
 def payment_callback(request):
