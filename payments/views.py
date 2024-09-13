@@ -1,9 +1,11 @@
 """The views for the payment app."""
 
+import json
 import requests
 from rest_framework import viewsets
 from django.http import HttpResponse, JsonResponse
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 from .models import Order
 from .serializers import OrderSerializer
 
@@ -17,28 +19,41 @@ class OrderStatusView(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
 
 
+@csrf_exempt
 def initiate_payment(request):
-    """Initiate jazzcash payment"""
+    """Handle payment initiation"""
 
-    # Replace these with your actual JazzCash credentials
-    merchant_id = settings.JAZZCASH_MERCHANT_ID
-    password = settings.JAZZCASH_PASSWORD
+    if request.method == "POST":
+        data = json.loads(request.body)
+        course = data.get("course")
+        amount = course["fee"]
 
-    # Payment initiation details
-    payload = {
-        "merchant_id": merchant_id,
-        "password": password,
-        "amount": 1000,  # Amount to be paid
-        "order_id": "123456",  # Unique order ID
-        "callback_url": "https://yourwebsite.com/payment/callback/",
-    }
+        # Define JazzCash payment initiation parameters
+        payload = {
+            "amount": amount,
+            "merchant_id": settings.JAZZCASH_MERCHANT_ID,
+            "password": settings.JAZZCASH_PASSWORD,
+            "return_url": "https://virtualquranschool.netlify.app/payment-success/",  # Update with your success page URL
+            "order_id": "unique_order_id",  # Replace with unique order ID
+        }
 
-    response = requests.post(f"{JAZZCASH_API_URL}/initiate-payment", data=payload)
-    return JsonResponse(response.json())
+        # Make request to JazzCash payment initiation endpoint
+        response = requests.post(
+            "https://jazzcash.com.pk/transaction/initiate", data=payload
+        )
+
+        if response.status_code == 200:
+            redirect_url = response.json().get("redirect_url")
+            return JsonResponse({"redirectUrl": redirect_url})
+        else:
+            return JsonResponse({"error": "Payment initiation failed"}, status=500)
+
+    return JsonResponse({"error": "Invalid request method"}, status=400)
 
 
 def payment_callback(request):
-    # Handle payment callback
+    """Handle payment callback"""
+
     return JsonResponse({"status": "success"})
 
 
