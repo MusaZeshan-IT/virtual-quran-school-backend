@@ -9,6 +9,7 @@ from rest_framework import viewsets
 from django.http import HttpResponse, JsonResponse
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from .models import Order
 from .serializers import OrderSerializer
 
@@ -28,6 +29,7 @@ class OrderStatusView(viewsets.ModelViewSet):
 
 
 @csrf_exempt
+@login_required
 def initiate_payment(request):
     """Initiate payment and redirect the user to the JazzCash page."""
 
@@ -36,12 +38,16 @@ def initiate_payment(request):
         logger.info("Raw request body: %s", request.body)
 
         data = json.loads(request.body)
-        user_id = data.get("user_id")  # Extract user_id
+        user = request.user  # Get the logged-in user
         course = data.get("course")
-        amount = course["fee"]
+        course_name = course.get("name")
+        amount = data.get("amount")
+
+        if not amount or not user or not course_name:
+            return JsonResponse({"error": "Missing required fields"}, status=400)
 
         # Step 1: Create an order in the database
-        order = Order.objects.create(user_id=user_id, status="pending", amount=amount)
+        order = Order.objects.create(user=user, course=course_name, status="pending", amount=amount)
 
         # JazzCash transaction parameters
         payload = {
@@ -51,7 +57,7 @@ def initiate_payment(request):
             "pp_MerchantID": settings.JAZZCASH_MERCHANT_ID,
             "pp_Password": settings.JAZZCASH_PASSWORD,
             "pp_TxnRefNo": str(order.id),  # Using the order ID
-            "pp_Amount": str(int(amount * 100)),  # Amount in paisa (1 PKR = 100 paisa)
+            "pp_Amount": str(int(amount)),  # Amount in USD
             "pp_ReturnURL": "https://virtualquranschool.netlify.app/payment-success/",
             "pp_Description": f"Payment for course: {course['name']}",
             "pp_SecureHash": generate_secure_hash(order.id, amount),

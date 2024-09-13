@@ -10,6 +10,7 @@ class Order(models.Model):
     """The model for the order"""
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.CharField(max_length=100)
     status = models.CharField(max_length=20, default="pending")
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     transaction_id = models.CharField(max_length=255, blank=True, null=True)
