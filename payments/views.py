@@ -86,7 +86,7 @@ def payment_ipn(request):
             # Confirm that the IPN was processed successfully
             return HttpResponse("IPN processed", status=200)
 
-        except Order.DoesNotExist:
+        except Order.objects.DoesNotExist:
             return HttpResponse("Order not found", status=404)
     else:
         return HttpResponse("Invalid request method", status=405)
