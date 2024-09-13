@@ -11,7 +11,7 @@ from .models import Order
 class OrderAdmin(admin.ModelAdmin):
     """The admin for the order model"""
 
-    list_display = ("user", "status", "amount", "transaction_id")
+    list_display = ("user", "status", "course", "amount", "transaction_id")
 
 
 admin.site.register(Order, OrderAdmin)

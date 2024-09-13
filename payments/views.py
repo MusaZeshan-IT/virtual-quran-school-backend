@@ -34,8 +34,7 @@ def initiate_payment(request):
         # Get the authenticated user from the request
         user = request.user if request.user.is_authenticated else None
 
-        course = data.get("course")
-        course_name = course.get("name")
+        course_name = data.get("course_name")
         amount = data.get("amount")
 
         if not amount or not user or not course_name:
