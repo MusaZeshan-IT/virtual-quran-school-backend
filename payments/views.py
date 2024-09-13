@@ -30,6 +30,7 @@ class OrderStatusView(viewsets.ModelViewSet):
 @csrf_exempt
 def initiate_payment(request):
     """Initiate payment and redirect the user to the JazzCash page."""
+
     if request.method == "POST":
         # Log the raw request body
         logger.info("Raw request body: %s", request.body)
