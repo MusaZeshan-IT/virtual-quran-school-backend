@@ -1,5 +1,6 @@
 """The views for the payment app."""
 
+import logging
 import json
 import hashlib
 import hmac
@@ -15,6 +16,9 @@ JAZZCASH_API_URL = (
     "https://sandbox.jazzcash.com.pk/ApplicationAPI/API/Payment/DoTransaction"
 )
 
+# Enable logging
+logger = logging.getLogger(__name__)
+
 
 class OrderStatusView(viewsets.ModelViewSet):
     """The view for handling order status requests"""
@@ -27,39 +31,44 @@ class OrderStatusView(viewsets.ModelViewSet):
 def initiate_payment(request):
     """Initiate payment and redirect the user to the JazzCash page."""
     if request.method == "POST":
-        data = json.loads(request.body)
-        user_id = data.get("user_id")  # Extract user_id
-        course = data.get("course")
-        amount = course["fee"]
+        try:
+            # Log the raw request body
+            logger.info("Raw request body: %s", request.body)
 
-        # Step 1: Create an order in the database
-        order = Order.objects.create(user_id=user_id, status="pending", amount=amount)
+            # Load the data
+            data = json.loads(request.body)
 
-        # JazzCash transaction parameters
-        payload = {
-            "pp_Version": "1.1",
-            "pp_TxnType": "MWALLET",
-            "pp_Language": "EN",
-            "pp_MerchantID": settings.JAZZCASH_MERCHANT_ID,
-            "pp_Password": settings.JAZZCASH_PASSWORD,
-            "pp_TxnRefNo": str(order.id),  # Using the order ID
-            "pp_Amount": str(int(amount * 100)),  # Amount in paisa (1 PKR = 100 paisa)
-            "pp_ReturnURL": "https://virtualquranschool.netlify.app/payment-success/",
-            "pp_Description": f"Payment for course: {course['name']}",
-            "pp_SecureHash": generate_secure_hash(order.id, amount),
-        }
+            # Log extracted details
+            logger.info("Received data: %s", data)
 
-        # Step 3: Send request to JazzCash
-        response = requests.post(JAZZCASH_API_URL, data=payload, timeout=10)
+            # Extract user_id and course details
+            user_id = data.get("user_id")
+            course = data.get("course")
+            amount = course.get("fee") if course else None
 
-        if response.status_code == 200:
-            # Get the JazzCash URL from the response
-            redirect_url = response.json().get(
-                "pp_TxnRefNo"
-            )  # JazzCash may send the URL
-            return JsonResponse({"redirectUrl": redirect_url})
-        else:
-            return JsonResponse({"error": "Payment initiation failed"}, status=500)
+            logger.info(f"User ID: {user_id}, Course: {course}, Amount: {amount}")
+
+            if not user_id or not amount:
+                return JsonResponse({"error": "Missing user_id or amount"}, status=400)
+
+            # Create an order in the database
+            order = Order.objects.create(
+                user_id=user_id, status="pending", amount=amount
+            )
+            logger.info(f"Order created with ID: {order.id}")
+
+            # Example response to confirm receipt of data
+            return JsonResponse(
+                {
+                    "message": "Payment data received",
+                    "order_id": order.id,
+                    "amount": amount,
+                }
+            )
+
+        except Exception as e:
+            logger.error(f"Error processing payment: {e}")
+            return JsonResponse({"error": "Error processing payment"}, status=500)
 
     return JsonResponse({"error": "Invalid request method"}, status=400)
 
