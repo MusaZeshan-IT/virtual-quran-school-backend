@@ -25,24 +25,32 @@ def initiate_payment(request):
 
     if request.method == "POST":
         data = json.loads(request.body)
+        user_id = data.get("user_id")  # Assuming user_id is passed from the frontend
         course = data.get("course")
         amount = course["fee"]
 
-        # Define JazzCash payment initiation parameters
+        # Step 1: Create an order in the database
+        order = Order.objects.create(user_id=user_id, status="pending", amount=amount)
+
+        # Use the order ID for the transaction
+        order_id = str(order.id)
+
+        # Step 2: Define JazzCash payment initiation parameters
         payload = {
             "amount": amount,
             "merchant_id": settings.JAZZCASH_MERCHANT_ID,
             "password": settings.JAZZCASH_PASSWORD,
             "return_url": "https://virtualquranschool.netlify.app/payment-success/",  # Update with your success page URL
-            "order_id": "unique_order_id",  # Replace with unique order ID
+            "order_id": order_id,  # Use the created order's ID
         }
 
-        # Make request to JazzCash payment initiation endpoint
+        # Step 3: Make request to JazzCash payment initiation endpoint
         response = requests.post(
             "https://jazzcash.com.pk/transaction/initiate", data=payload
         )
 
         if response.status_code == 200:
+            # Get the redirect URL from JazzCash response
             redirect_url = response.json().get("redirect_url")
             return JsonResponse({"redirectUrl": redirect_url})
         else:
