@@ -1,6 +1,5 @@
 """The views for the payment app."""
 
-import logging
 import json
 import hashlib
 import hmac
@@ -9,16 +8,12 @@ from rest_framework import viewsets
 from django.http import HttpResponse, JsonResponse
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.decorators import login_required
 from .models import Order
 from .serializers import OrderSerializer
 
 JAZZCASH_API_URL = (
     "https://sandbox.jazzcash.com.pk/ApplicationAPI/API/Payment/DoTransaction"
 )
-
-# Enable logging
-logger = logging.getLogger(__name__)
 
 
 class OrderStatusView(viewsets.ModelViewSet):
@@ -29,16 +24,16 @@ class OrderStatusView(viewsets.ModelViewSet):
 
 
 @csrf_exempt
-@login_required
 def initiate_payment(request):
     """Initiate payment and redirect the user to the JazzCash page."""
 
     if request.method == "POST":
-        # Log the raw request body
-        logger.info("Raw request body: %s", request.body)
 
         data = json.loads(request.body)
-        user = request.user  # Get the logged-in user
+
+        # Get the authenticated user from the request
+        user = request.user if request.user.is_authenticated else None
+
         course = data.get("course")
         course_name = course.get("name")
         amount = data.get("amount")
@@ -47,7 +42,9 @@ def initiate_payment(request):
             return JsonResponse({"error": "Missing required fields"}, status=400)
 
         # Step 1: Create an order in the database
-        order = Order.objects.create(user=user, course=course_name, status="pending", amount=amount)
+        order = Order.objects.create(
+            user=user, course=course_name, status="pending", amount=amount
+        )
 
         # JazzCash transaction parameters
         payload = {
