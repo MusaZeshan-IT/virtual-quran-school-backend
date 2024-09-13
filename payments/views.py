@@ -32,6 +32,7 @@ def initiate_payment(request):
     if request.method == "POST":
 
         data = json.loads(request.body)
+        print("Received data:", data)
 
         # Get the authenticated user from the request
         user = request.user  # User will be authenticated due to adding the jwt token
