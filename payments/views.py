@@ -55,7 +55,7 @@ def initiate_payment(request):
             "pp_TxnRefNo": str(order.id),  # Using the order ID
             "pp_Amount": str(int(amount)),  # Amount in USD
             "pp_ReturnURL": "https://virtualquranschool.netlify.app/payment-success/",
-            "pp_Description": f"Payment for course: {course['name']}",
+            "pp_Description": f"Payment for course: {course_name}",
             "pp_SecureHash": generate_secure_hash(order.id, amount),
         }
 
