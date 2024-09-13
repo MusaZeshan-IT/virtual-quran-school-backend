@@ -37,8 +37,14 @@ def initiate_payment(request):
         course_name = data.get("course_name")
         amount = data.get("amount")
 
-        if not amount or not user or not course_name:
-            return JsonResponse({"error": "Missing required fields"}, status=400)
+        if not amount:
+            return JsonResponse({"error": "Missing course amount"}, status=400)
+
+        if not course_name:
+            return JsonResponse({"error": "Missing course name"}, status=400)
+
+        if not user:
+            return JsonResponse({"error": "User not authenticated"}, status=400)
 
         # Step 1: Create an order in the database
         order = Order.objects.create(
