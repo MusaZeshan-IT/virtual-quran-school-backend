@@ -30,13 +30,10 @@ def initiate_payment(request):
     """Initiate payment and redirect the user to the JazzCash page."""
 
     if request.method == "POST":
-
         data = json.loads(request.body)
         print("Received data:", data)
 
-        # Get the authenticated user from the request
-        user = request.user  # User will be authenticated due to adding the jwt token
-
+        user = request.user  # Authenticated user
         course_name = data.get("course_name")
         amount = data.get("amount")
 
@@ -63,16 +60,31 @@ def initiate_payment(request):
         }
 
         # Step 3: Send request to JazzCash
-        response = requests.post(JAZZCASH_API_URL, data=payload, timeout=10)
+        try:
+            response = requests.post(JAZZCASH_API_URL, data=payload, timeout=10)
 
-        if response.status_code == 200:
-            # Get the JazzCash URL from the response
-            redirect_url = response.json().get(
-                "pp_TxnRefNo"
-            )  # JazzCash may send the URL
-            return JsonResponse({"redirectUrl": redirect_url})
-        else:
-            return JsonResponse({"error": "Payment initiation failed"}, status=500)
+            if response.status_code == 200:
+                # Ensure the response contains the expected redirect URL
+                redirect_url = response.json().get("pp_TxnRefNo")
+                if redirect_url:
+                    return JsonResponse({"redirectUrl": redirect_url})
+                else:
+                    return JsonResponse(
+                        {"error": "JazzCash did not return a redirect URL"}, status=500
+                    )
+            else:
+                return JsonResponse(
+                    {"error": "Payment initiation failed with JazzCash"}, status=500
+                )
+
+        except requests.Timeout:
+            return JsonResponse(
+                {"error": "JazzCash payment request timed out"}, status=500
+            )
+        except requests.RequestException as e:
+            return JsonResponse(
+                {"error": f"Payment request failed: {str(e)}"}, status=500
+            )
 
     return JsonResponse({"error": "Invalid request method"}, status=400)
 
