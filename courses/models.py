@@ -1,3 +1,7 @@
+"""
+The models for the courses app
+"""
+
 from django.db import models
 
 
@@ -78,6 +82,9 @@ class CoursePlan(models.Model):
     class_days = models.JSONField(
         default=list, help_text="Days of the week for this plan"
     )
+
+    # Default Manager
+    objects = models.Manager()
 
     def __str__(self):
         return f"{self.name} for {self.course.name}"

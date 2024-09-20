@@ -1,8 +1,8 @@
 """The views for the course app"""
 
 from rest_framework import generics
-from .models import Course
-from .serializers import CourseSerializer
+from .models import Course, CoursePlan
+from .serializers import CourseSerializer, CoursePlanSerializer
 
 # Create your views here.
 
@@ -20,3 +20,21 @@ class CourseDetailView(generics.RetrieveAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
     lookup_field = "slug"
+
+
+class CoursePlanListView(generics.ListAPIView):
+    """List all plans for a course"""
+
+    serializer_class = CoursePlanSerializer
+
+    def get_queryset(self):
+        course_slug = self.kwargs["course_slug"]
+        return CoursePlan.objects.filter(course__slug=course_slug)
+
+
+class CoursePlanDetailView(generics.RetrieveAPIView):
+    """Retrieve a specific plan for a course"""
+
+    queryset = CoursePlan.objects.all()
+    serializer_class = CoursePlanSerializer
+    lookup_field = "id"

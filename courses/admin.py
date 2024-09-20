@@ -1,7 +1,7 @@
 """The admin for the courses app"""
 
 from django.contrib import admin
-from .models import Course, Category
+from .models import Course, Category, CoursePlan
 
 # Register your models here.
 
@@ -30,5 +30,18 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ("name",)
 
 
+class CoursePlanAdmin(admin.ModelAdmin):
+    """The admin for the course plans"""
+
+    list_display = (
+        "id",
+        "name",
+        "course_name",
+        "number_of_classes_per_week",
+        "class_days",
+    )
+
+
 admin.site.register(Course, CourseAdmin)
+admin.site.register(CoursePlan, CoursePlanAdmin)
 admin.site.register(Category, CategoryAdmin)
