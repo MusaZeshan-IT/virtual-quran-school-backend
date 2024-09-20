@@ -36,7 +36,7 @@ class CoursePlanAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "name",
-        "course_name",
+        "course",
         "number_of_classes_per_week",
         "class_days",
     )
