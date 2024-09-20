@@ -1,5 +1,3 @@
-"""The models for the courses"""
-
 from django.db import models
 
 
@@ -62,3 +60,30 @@ class Course(models.Model):
 
     def __str__(self):
         return f"{self.name}"
+
+
+class CoursePlan(models.Model):
+    """Model for different course plans"""
+
+    PLAN_CHOICES = [
+        ("Plan 1", "2 Days (Mon & Wed)"),
+        ("Plan 2", "2 Days (Sat & Sun)"),
+        ("Plan 3", "3 Days (Mon, Wed & Fri)"),
+        ("Plan 4", "5 Days (Mon to Fri)"),
+    ]
+
+    name = models.CharField(max_length=50, choices=PLAN_CHOICES, unique=True)
+    course = models.ForeignKey(Course, related_name="plans", on_delete=models.CASCADE)
+    number_of_classes_per_week = models.IntegerField()
+    class_days = models.JSONField(
+        default=list, help_text="Days of the week for this plan"
+    )
+
+    def __str__(self):
+        return f"{self.name} for {self.course.name}"
+
+    def save(self, *args, **kwargs):
+        """Automatically set the number of classes per week based on the plan"""
+        if not self.number_of_classes_per_week:
+            self.number_of_classes_per_week = len(self.class_days)
+        super().save(*args, **kwargs)
