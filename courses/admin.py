@@ -11,7 +11,6 @@ class CourseAdmin(admin.ModelAdmin):
 
     list_display = (
         "name",
-        "fee",
         "level",
         "type",
         "enrolled",
@@ -36,6 +35,7 @@ class CoursePlanAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "name",
+        "fee",
         "course",
         "number_of_classes_per_week",
         "class_days",

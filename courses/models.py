@@ -19,7 +19,6 @@ class Course(models.Model):
 
     name = models.CharField(max_length=100)
     hidden = models.BooleanField(default=False)
-    fee = models.IntegerField()
     tutor = models.CharField(max_length=100)
     provided_by = models.CharField(max_length=100)
     level = models.CharField(max_length=100)
