@@ -6,6 +6,13 @@ from .models import Course, CoursePlan
 from .serializers import CourseSerializer, CoursePlanSerializer
 
 
+class CourseListView(generics.ListAPIView):
+    """List all courses"""
+
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+
+
 class CourseDetailView(generics.RetrieveAPIView):
     """Retrieve detailed information about a course"""
 
