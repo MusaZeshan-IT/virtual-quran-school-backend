@@ -6,7 +6,7 @@ from . import views
 urlpatterns = [
     path("", views.CourseListView.as_view(), name="course-list"),
     path(
-        "courses/<slug:slug>/", views.CourseDetailView.as_view(), name="course-detail"
+        "<slug:slug>/", views.CourseDetailView.as_view(), name="course-detail"
     ),
     path(
         "courses/<slug:course_slug>/plans/",
