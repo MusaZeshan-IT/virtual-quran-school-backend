@@ -39,5 +39,9 @@ class CoursePlanDetailView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         course_slug = self.kwargs["course_slug"]
-        plan_id = self.kwargs["id"]
-        return CoursePlan.objects.filter(course__slug=course_slug, id=plan_id)
+        # Filter course plans by course slug
+        return CoursePlan.objects.filter(course__slug=course_slug)
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        return generics.get_object_or_404(queryset, id=self.kwargs["id"])
