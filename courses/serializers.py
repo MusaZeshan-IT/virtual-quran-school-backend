@@ -11,7 +11,7 @@ class CoursePlanSerializer(serializers.ModelSerializer):
         """The meta data for the serializer"""
 
         model = CoursePlan
-        fields = ["id", "name", "number_of_classes_per_week", "class_days"]
+        fields = "__all__"
 
 
 class CourseSerializer(serializers.ModelSerializer):
