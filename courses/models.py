@@ -79,7 +79,9 @@ class CoursePlan(models.Model):
     name = models.CharField(max_length=50, choices=PLAN_CHOICES, unique=True)
     course = models.ForeignKey(Course, related_name="plans", on_delete=models.CASCADE)
     number_of_classes_per_week = models.IntegerField()
-    class_days = models.CharField(max_length=100, default="Mon & Wed")
+    class_days = models.JSONField(
+        default=list, help_text="Days of the week for this plan"
+    )
 
     # Default Manager
     objects = models.Manager()
