@@ -35,6 +35,9 @@ class CoursePlanListView(generics.ListAPIView):
 class CoursePlanDetailView(generics.RetrieveAPIView):
     """Retrieve a specific plan for a course"""
 
-    queryset = CoursePlan.objects.all()
     serializer_class = CoursePlanSerializer
-    lookup_field = "id"
+
+    def get_queryset(self):
+        course_slug = self.kwargs["course_slug"]
+        plan_id = self.kwargs["id"]
+        return CoursePlan.objects.filter(course__slug=course_slug, id=plan_id)

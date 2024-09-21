@@ -12,7 +12,7 @@ urlpatterns = [
         name="course-plan-list",
     ),
     path(
-        "plans/<int:id>/",
+        "<slug:course_slug>/plans/<int:id>/",
         views.CoursePlanDetailView.as_view(),
         name="course-plan-detail",
     ),
