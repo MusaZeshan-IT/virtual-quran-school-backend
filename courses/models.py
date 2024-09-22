@@ -70,7 +70,7 @@ class CoursePlan(models.Model):
 
     PLAN_CHOICES = [
         ("Plan 1", "2 Days (Mon & Wed)"),
-        ("Plan 2", "2 Days (Sat & Sun)"),
+        ("Plan 2 (Weekend Classes)", "2 Days (Sat & Sun)"),
         ("Plan 3", "3 Days (Mon, Wed & Fri)"),
         ("Plan 4", "5 Days (Mon to Fri)"),
     ]
